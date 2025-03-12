@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: java-challange
+  data:
+    mongodb:
+      uri: ${mongodb.uri:mongodb://admin:password@localhost:27017/admin}
+      database: applications
+
+mongock:
+  migration-scan-package: com.vmogroup.java_challange.changelog
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) %logger{26} - %msg %ex{10}%n"
+
+

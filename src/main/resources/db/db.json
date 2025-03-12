@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Accounting application.",
+    "description": "1.",
+    "enabled": true,
+    "type": "web"
+  },
+  {
+    "name": "Human resource application.",
+    "description": "1.",
+    "enabled": true,
+    "type": "service"
+  },
+  {
+    "name": "Customer Relationship Management (CRM) system.",
+    "description": "2.",
+    "enabled": true,
+    "type": "web"
+  },
+  {
+    "name": "AI-based chatbot assistant.",
+    "description": "3.",
+    "enabled": true,
+    "type": "service"
+  },
+  {
+    "name": "Payroll processing system.",
+    "description": "4.",
+    "enabled": true,
+    "type": "service"
+  }
+]
