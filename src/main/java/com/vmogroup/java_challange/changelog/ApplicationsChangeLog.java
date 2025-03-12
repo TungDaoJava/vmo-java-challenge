@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+@SuppressWarnings("unused")
 @ChangeUnit(order = "001", id ="application-collections", author = "TungDN")
 @Slf4j
 public class ApplicationsChangeLog {
