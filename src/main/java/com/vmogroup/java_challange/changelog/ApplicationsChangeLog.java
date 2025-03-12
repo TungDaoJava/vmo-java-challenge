@@ -55,7 +55,7 @@ public class ApplicationsChangeLog {
     }
 
     @RollbackBeforeExecution
-    public void rollbackBeforeExecution(MongoDatabase db) {
+    public void rollbackBeforeExecution() {
         log.error("Error when execution before migration script. Check log for more details");
     }
 
