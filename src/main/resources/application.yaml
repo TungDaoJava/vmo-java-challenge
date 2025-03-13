@@ -3,12 +3,12 @@ spring:
     name: java-challange
   data:
     mongodb:
-      uri: ${mongodb.uri:mongodb://app:apppassword@localhost:27017}
+      uri: ${MONGODB_URI:mongodb://app:apppassword@localhost:27017}
       database: applications
 
 mongock:
   migration-scan-package: com.vmogroup.java_challange.changelog
-  mongo-uri: ${mongock.uri:mongodb://mongock:password@localhost:27017}
+  mongo-uri: ${MONGOCK_URI:mongodb://mongock:password@localhost:27017}
 
 server:
   port: 8080
