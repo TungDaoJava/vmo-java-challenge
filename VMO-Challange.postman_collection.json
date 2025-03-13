@@ -1,0 +1,192 @@
+{
+	"info": {
+		"_postman_id": "22daf31b-a61b-433d-86ca-5961ba78ac2a",
+		"name": "VMO Challange",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34113409"
+	},
+	"item": [
+		{
+			"name": "Get All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/applications?text=chatbot&page=0&enabled=true&size=5&type=service",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"applications"
+					],
+					"query": [
+						{
+							"key": "text",
+							"value": "chatbot"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "enabled",
+							"value": "true"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						},
+						{
+							"key": "type",
+							"value": "service"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get By Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/applications/67d2219c8a7d234fb7091bdb",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"applications",
+						"67d2219c8a7d234fb7091bdb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Application",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.collectionVariables.set(\"newApplicationId\", response.id);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"Booking Application\",\r\n    \"description\": \"Booking\",\r\n    \"enabled\": false,\r\n    \"type\": \"app\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/applications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"applications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch Application",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"enabled\": false,\r\n    \"description\": \"A booking app\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/applications/{{newApplicationId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"applications",
+						"{{newApplicationId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "newApplicationId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

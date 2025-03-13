@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 @SuppressWarnings("unused")
-@ChangeUnit(order = "001", id ="application-index", author = "TungDN")
+@ChangeUnit(order = "002", id ="application-index", author = "TungDN")
 @Slf4j
 public class ApplicationsIndex {
 
