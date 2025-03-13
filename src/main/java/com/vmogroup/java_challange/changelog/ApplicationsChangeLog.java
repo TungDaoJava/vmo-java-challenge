@@ -12,6 +12,7 @@ import io.mongock.api.annotations.RollbackBeforeExecution;
 import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.InputStream;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ApplicationsChangeLog {
 
 
     @BeforeExecution
-    public void beforeExecution(MongoDatabase db) {
+    public void beforeExecution(@Qualifier("mongock") MongoDatabase db) {
         boolean collectionExists = StreamSupport
                 .stream(db.listCollectionNames().spliterator(), false)
                 .anyMatch(name -> name.equals(COLLECTION_NAME));
@@ -62,7 +63,7 @@ public class ApplicationsChangeLog {
 
 
     @Execution
-    public void execution(MongoDatabase db) throws Exception {
+    public void execution(@Qualifier("mongock") MongoDatabase db) throws Exception {
 
         MongoCollection<Document> collection = db.getCollection(COLLECTION_NAME);
         ObjectMapper objectMapper = new ObjectMapper();

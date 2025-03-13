@@ -11,6 +11,7 @@ services:
       MONGO_INITDB_DATABASE: applications
     volumes:
       - mongodb_data:/data/db
+      - ./mongo/mongo-role.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
 volumes:
   mongodb_data:
