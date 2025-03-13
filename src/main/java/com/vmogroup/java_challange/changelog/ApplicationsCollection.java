@@ -21,7 +21,7 @@ import java.util.stream.StreamSupport;
 @SuppressWarnings("unused")
 @ChangeUnit(order = "001", id ="application-collections", author = "TungDN")
 @Slf4j
-public class ApplicationsChangeLog {
+public class ApplicationsCollection {
 
     private static final String COLLECTION_NAME = "applications";
     private static final String DB_JSON_PATH = "db/db.json";
