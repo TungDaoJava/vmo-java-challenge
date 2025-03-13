@@ -1,111 +1,120 @@
-# Java Programming Challenge
+## [Requirement](requirement.md)
+## 0. Technology choice
 
-Hello 👋
-This is VMO's challenge for potential new engineering team members.
+-   Due to the applicant's familiarity with the Spring Boot ecosystem, Spring Boot will be chosen as the Java framework for developing the service
+-   To accomplice with the challenge's requirement, MongoDB is chosen as the stored database.
+-   Docker Compose is chosen as the deployment tool, so the service can be started on any machine with Docker without further installation/
 
-## Instructions
+## 1. Setup Mongo database
 
-Fork this repository, and implement the scenario described below.
+-  For set up the Mongo database to match the requirement, the best option is relying on Mongock. The tool, as in self-description, is a Java based migration tool that focused in managing changes of NoSQL databases. This is important, as the consistence of database version is critical for minimizing potential issues of switching environment (from dev to prod, for example)
 
-- You _shall_ complete this challenge using **Java language**,
-- You _should_ try to show your development process to present a **production-ready** code,
-- Please, describe your approach, your technical choices, including architectural, and anything you want us to know in a results.md file,
+```xml
+		<dependency>
+			<groupId>io.mongock</groupId>
+			<artifactId>mongock-springboot-v3</artifactId>
+			<version>5.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mongock</groupId>
+			<artifactId>mongodb-springdata-v4-driver</artifactId>
+			<version>5.5.0</version>
+		</dependency>
+```
 
-## The Scenario
+-  Furthermore, we want to minimize the potential unwanted change in database. Therefore, only Mongock will have the priviledge of creating collections. The application will use a MongoDB user will only read and write permission.
 
-Your mission is to implement a single endpoint that will be integrated in a larger **microservice** architecture.
+```js
 
-- the endpoint is exposed at `/api/v1/applications`
-- the endpoint allows to manage data from a local database (see explanations below)
-- the query may takes parameters, to filter the results. You are expected to propose any kind of query params you may find useful to provide a rich user experience,
-- the endpoint returns a JSON response with an array of matching results
-- application should be delivered as a docker + docker-compose so we cna start it locally without any dependency
+adminDb.createUser({
+    user: "mongock",
+    pwd: "password",
+    roles: [
+        { role: "dbOwner", db: "applications" },
+        { role: "readWrite", db: "applications" }
+    ]
+});
 
-## The database
-
-The initial database is provided in a file [db.json](db.json).
-You are expected to integrate the data in a mongodb local instance (docker), and explain how to install, launch and populate the database. This database **must** be used by your code.
-The schema of the provided data is :
+adminDb.createUser({
+    user: "app",
+    pwd: "apppassword",
+    roles: [
+        { role: "readWrite", db: "applications" }
+    ]
+});
 
 ```
-{
-  "type": "array",
-  "items": {
-    "type": "object"
-    {
-      "name": {
-        "type": "string",
-        "minLength": 1
-      },
-      "description": {
-        "type": "string",
-	     "minLength": 1,
-	     "maxLength": 150
-      },
-      "enabled": {
-        "type": "boolean"
-      },
-      "type": {
-        "type": "string"
-      }
-    }
-  }
+
+- Normally, this will be done by a DevOps team. To reduce the complexity, this action will be mock as load immediately into MongoDB start script
+```yaml
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo/mongo-role.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+```
+
+- The final piece in the setup is how can we use Mongock into our system:
+
+```yaml
+mongock:
+  migration-scan-package: com.vmogroup.java_challange.changelog
+  mongo-uri: ${MONGOCK_URI:mongodb://mongock:password@localhost:27017}
+```
+
+All the changelog will be stored in the changelog folder, such as 
+```java
+@ChangeUnit(order = "001", id ="application-collections", author = "TungDN")
+@Slf4j
+public class ApplicationsIndex {
+// Implementation in here
 }
 ```
 
-Example:
+- The initial database, follow as in the requirement, is stored on `resources/db/db.json` file within the Spring Boot Project
+
+## 2. REST Controller
+
+- We will setup a simple Create - Read - Update operations with the documents. (note that due to the time limitation, Delete is not implemented)
+
+```java
+@RestController
+@RequestMapping("/api/v1/applications")
+@RequiredArgsConstructor
+public class ApplicationController {
+    private final ApplicationService applicationService;
+
+    @GetMapping
+    // Read method for multiple record
+    
+    @GetMapping("/{id}")
+    // Read method for single record
+    
+    @PostMapping
+    // Create method
+
+    @PatchMapping("/{id}")
+    // Update method
+}
+```
+
+- For error handling, we will rely on the `@RestControllerAdvice` that already provided by Spring Boot framework
+```java
+@RestControllerAdvice
+public class ControllerAdvice {
+    @ExceptionHandler(produces = "application/json", exception = {ResponseStatusException.class})
+    // Handle Error
+    
+    @ExceptionHandler(produces = "application/json", exception = {RuntimeException.class})
+    // Handle Error
+}
 
 ```
-[
-  {
-    "text": "Accounting application.",
-    "description": "1.",
-    "enabled": true,
-    "type": "web"
-  },
-  {
-    "text": "Human resource application.",
-    "description": "1.",
-    "enabled": true,
-    "type": "service"
-  }
-]
-```
 
-## How we review ?
+- Examiner can check the perform of the API with the [Postman Collection](VMO-Challange.postman_collection.json) attached in the repository. 
 
-Your application will be reviewed by one of our team member. We do take into consideration your experience level.
+## 3. Potential directions
 
-**We value quality over feature-completeness**. The goal of this code sample is to help us identify what you consider **production-ready** code. You should consider this code ready for final review with your colleague, i.e. this would be the last step before deploying to production.
+- Obviously, this project is not really production-ready grade. There are still more works can be done before deploying on production environment
 
-The aspects of your code we will assess include:
+- Monitoring: ELK stack - Grafana is the standard tool for monitoring microservices. However, Uptrace, a new open-source observability tool, shows many promises, with simple integration, low effort to setup the monitoring tool
 
-- **Architecture**: how clean is the separation between the logical layers ? does the code make use of design patterns ? Are the RESTful principles followed ?
-- **Clarity**: does the documentation (result.md) clearly and concisely explains the problem and solution? Are technical tradeoffs explained ?
-- **Correctness**: does the code do what was asked ? If there is anything missing, does the result.md explain why it is missing?
-- **Code quality**: is the code simple, easy to understand, and maintainable ? Are there any code smells or other red flags ? Does it follows coding principles such as the single responsibility principle ? Is the coding style consistent with the language's guidelines ? Is it consistent throughout the codebase ?
-- **Usability**: is your API suitable to be used by many different clients, some with memory constraints, some with perfomance issues ? Can your API be used on different type of devices like web, mobile, or IoT ?
-- **Security**: are there any obvious vulnerability ?
-- **Testing**: how thorough are the automated tests ? Will they be difficult to change if the requirements of the application were to change ? Are there some unit or some integration tests ? We're not looking for full coverage (given time constraint) but just trying to get a feel for your testing skills.
-- **Technical choices**: do choices of libraries, databases, architecture etc. seem appropriate for the chosen application ?
-- **Documentation**: is your API documented ? With a decent handling of http status code ? With curl examples ? Does it expose a modern documentation (swagger-like) ?
-- **Production-readiness**: does the code include monitoring ? logging ? proper error handling ?
-
-Bonus point (those items are optional):
-
-- **Scalability**: will technical choices scale well ? If not, is there a discussion of those choices in the result.md ?
-- **Authentication**: does the API allows user authentication ?
-
-## Notes
-
-- We're evaluating you on completion of the scenario, but also on style. Do you commit often? Did you make code that you would enjoy reading ? Things like that are important to our team 👊
-- We expect you to provide a code as you would do in any professional situation, with future maintenability and continuous deployment constraints in mind, with deployment or installation instructions, ...
-- This should be fun! If you're stuck on an instruction or if something needs clarification, you can start discussion on the repository board.
-
-## Done ?
-
-Great job! When you're all finished, open a PR and we'll review it together 🙌
-
-## Thanks
-
-- https://vmogroup.com/
+- Handle peak load: This system alone wont be able to handle a traffic spike with hugh amount of Concurrent Users. This can be solved with a right combination of memory cache, load balancing, and auto scaling  
